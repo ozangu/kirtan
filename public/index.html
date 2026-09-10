@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-06GGBQTP8V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-06GGBQTP8V');
+  </script>
+  <title>Pushti Kirtan - Pushtimargiya Kirtans, Meanings, Raag and Transliterations</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="description" content="Search and read more than 6,400 Pushtimargiya kirtans with Vraj Bhasha text, English meanings, transliterations, raag, and occasion.">
+  <link rel="canonical" href="https://pushtikirtan.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Pushti Kirtan">
+  <meta property="og:title" content="Pushti Kirtan - Pushtimargiya Kirtans and Meanings">
+  <meta property="og:description" content="Search and read more than 6,400 Pushtimargiya kirtans with Vraj Bhasha text, English meanings, transliterations, raag, and occasion.">
+  <meta property="og:url" content="https://pushtikirtan.com/">
+  <meta property="og:image" content="https://pushtikirtan.com/images/placeholder.png">
+  <meta property="og:image:secure_url" content="https://pushtikirtan.com/images/placeholder.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1254">
+  <meta property="og:image:height" content="1254">
+  <meta property="og:image:alt" content="Pushti Kirtan">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Pushti Kirtan - Pushtimargiya Kirtans and Meanings">
+  <meta name="twitter:description" content="Search and read more than 6,400 Pushtimargiya kirtans with Vraj Bhasha text, English meanings, transliterations, raag, and occasion.">
+  <meta name="twitter:image" content="https://pushtikirtan.com/images/placeholder.png">
+  <meta name="twitter:image:alt" content="Pushti Kirtan">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css?v=20260910-mobile-menu-v2">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": "https://pushtikirtan.com/#website",
+      "name": "Pushti Kirtan",
+      "url": "https://pushtikirtan.com/",
+      "description": "Search and read more than 6,400 Pushtimargiya kirtans with Vraj Bhasha text, English meanings, transliterations, raag, and occasion.",
+      "inLanguage": ["en", "hi"],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://pushtikirtan.com/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a href="/" class="topbar__brand">
+        <span class="topbar__mark" aria-hidden="true">
+          <img class="topbar__svg-icon" src="svg.svg" alt="">
+        </span>
+        <span class="topbar__brand-name">Pushti Kirtan</span>
+      </a>
+      <div class="topbar__menu">
+        <button class="topbar__menu-toggle" type="button" aria-expanded="false" aria-label="Contribution menu">
+          <span class="topbar__menu-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Contribution menu</span>
+        </button>
+        <nav class="topbar__actions" aria-label="Contribute">
+        <a class="topbar__contribute" href="contribute-code.html">Developers</a>
+        <a class="topbar__contribute" href="contribute-proofread.html">Proofreaders</a>
+        </nav>
+      </div>
+      <div class="topbar__search topbar__search--right">
+        <label for="search" class="visually-hidden">Search</label>
+        <input id="search" type="search" placeholder="Search kirtans…" autocomplete="off">
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap wrap--wide home-page">
+    <section class="filters">
+      <fieldset class="filter-language">
+        <legend class="visually-hidden">Filter language</legend>
+        <div class="filter-language__control">
+          <input type="radio" id="filter-lang-english" name="filter-language" value="english" checked>
+          <label for="filter-lang-english">English</label>
+          <input type="radio" id="filter-lang-hindi" name="filter-language" value="hindi">
+          <label for="filter-lang-hindi">Hindi</label>
+        </div>
+      </fieldset>
+      <div class="filter-group">
+        <label for="type">Occasion</label>
+        <select id="type">
+          <option value="">All Occasions</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="raag">Raag</label>
+        <select id="raag">
+          <option value="">All Raags</option>
+        </select>
+      </div>
+    </section>
+
+    <div id="status">Loading…</div>
+
+    <nav id="pagination-top" class="pagination" aria-label="Kirtan pages"></nav>
+
+    <section id="results" class="kirtan-grid"></section>
+
+    <nav id="pagination-bottom" class="pagination pagination--bottom" aria-label="Kirtan pages"></nav>
+  </main>
+
+  <footer class="site-footer wrap">
+    <nav class="site-footer__nav" aria-label="Footer">
+      <a href="contribute-code.html">Developers</a>
+      <span aria-hidden="true">·</span>
+      <a href="contribute-proofread.html">Proofreaders</a>
+      <span aria-hidden="true">·</span>
+      <a href="legal.html">Terms, Privacy Policy & Disclaimer</a>
+      <span aria-hidden="true">·</span>
+      <a href="contact.html">Contact Us</a>
+    </nav>
+    <p class="site-footer__copy">PushtiKirtan.com</p>
+  </footer>
+
+  <script src="topbar.js"></script>
+  <script src="api.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

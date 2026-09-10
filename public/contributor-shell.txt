@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pushti Kirtan Contributor</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css?v=20260910-mobile-menu-v2">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a href="/" class="topbar__brand">
+        <span class="topbar__mark" aria-hidden="true">
+          <img class="topbar__svg-icon" src="/svg.svg" alt="">
+        </span>
+        <span class="topbar__brand-name">Pushti Kirtan Contributor</span>
+      </a>
+      <a href="/" class="topbar__back">← Public Site</a>
+    </div>
+  </header>
+
+  <main class="wrap admin-page">
+    <section id="contributor-login" class="admin-login" hidden>
+      <div class="admin-login__panel">
+        <h1>Contributor Login</h1>
+        <p>Sign in to clean kirtan text and translations for admin review.</p>
+        <form id="contributor-login-form" class="admin-form">
+          <label>
+            Username
+            <input name="username" autocomplete="username" required>
+          </label>
+          <label>
+            Password
+            <input name="password" type="password" autocomplete="current-password" required>
+          </label>
+          <button type="submit" class="admin-button admin-button--primary">Log In</button>
+          <div id="contributor-login-error" class="admin-form__error" role="alert"></div>
+        </form>
+      </div>
+    </section>
+
+    <section id="contributor-dashboard" class="admin-dashboard" hidden>
+      <div class="admin-dashboard__header">
+        <div>
+          <p class="admin-eyebrow">Contribution</p>
+          <h1>Kirtans</h1>
+          <p id="contributor-count" class="admin-dashboard__count">Loading...</p>
+        </div>
+        <div class="admin-actions">
+          <button id="contributor-logout" class="admin-button" type="button">Logout</button>
+        </div>
+      </div>
+
+      <form id="contributor-search-form" class="admin-search">
+        <label>
+          Search
+          <input id="contributor-search" type="search" placeholder="ID, title, raag, text..." autocomplete="off">
+        </label>
+        <label>
+          Status
+          <select id="contributor-status">
+            <option value="all">All</option>
+            <option value="unverified" selected>Unverified</option>
+            <option value="verified">Verified</option>
+          </select>
+        </label>
+        <button class="admin-button admin-button--primary" type="submit">Search</button>
+      </form>
+
+      <section class="admin-subpanel contributor-history-panel" aria-labelledby="contributor-history-title">
+        <div class="admin-subpanel__header">
+          <div>
+            <h2 id="contributor-history-title">My Contributions</h2>
+            <p id="contributor-history-summary" class="admin-dashboard__count">Loading contribution history...</p>
+          </div>
+          <button id="contributor-history-refresh" class="admin-button" type="button">Refresh</button>
+        </div>
+        <div id="contributor-history-results" class="admin-results"></div>
+      </section>
+
+      <div id="contributor-results" class="admin-results"></div>
+      <div class="admin-pager">
+        <button id="contributor-prev" class="admin-button" type="button">Previous</button>
+        <span id="contributor-page-state"></span>
+        <button id="contributor-next" class="admin-button" type="button">Next</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="/contributor.js"></script>
+</body>
+</html>

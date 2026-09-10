@@ -1,0 +1,13 @@
+{
+  "name": "kirtan",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "export:public-data": "scripts/export-public-kirtans.sh"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

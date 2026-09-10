@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pushti Kirtan Admin</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css?v=20260910-mobile-menu-v2">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a href="/" class="topbar__brand">
+        <span class="topbar__mark" aria-hidden="true">
+          <img class="topbar__svg-icon" src="/svg.svg" alt="">
+        </span>
+        <span class="topbar__brand-name">Pushti Kirtan Admin</span>
+      </a>
+      <a href="/" class="topbar__back">← Public Site</a>
+    </div>
+  </header>
+
+  <main class="wrap admin-page">
+    <section id="admin-login" class="admin-login" hidden>
+      <div class="admin-login__panel">
+        <h1>Admin Login</h1>
+        <p>Sign in to review, edit, verify, and back up kirtans.</p>
+        <form id="admin-login-form" class="admin-form">
+          <label>
+            Username
+            <input name="username" autocomplete="username" required>
+          </label>
+          <label>
+            Password
+            <input name="password" type="password" autocomplete="current-password" required>
+          </label>
+          <button type="submit" class="admin-button admin-button--primary">Log In</button>
+          <div id="admin-login-error" class="admin-form__error" role="alert"></div>
+        </form>
+      </div>
+    </section>
+
+    <section id="admin-dashboard" class="admin-dashboard" hidden>
+      <div class="admin-dashboard__header">
+        <div>
+          <p class="admin-eyebrow">Administration</p>
+          <h1>Kirtans</h1>
+          <p id="admin-count" class="admin-dashboard__count">Loading...</p>
+        </div>
+        <div class="admin-actions">
+          <a class="admin-button admin-button--primary" href="/kirtan.html?new=1">New Kirtan</a>
+          <button id="admin-review-toggle" class="admin-button" type="button">Review Queue</button>
+          <button id="admin-contributors-toggle" class="admin-button" type="button">Contributors</button>
+          <a class="admin-button" href="/api/admin/kirtans.csv">Download CSV</a>
+          <a class="admin-button" href="/api/admin/kirtan.sql">Download Database</a>
+          <button id="admin-logout" class="admin-button" type="button">Logout</button>
+        </div>
+      </div>
+
+      <section id="admin-review-panel" class="admin-subpanel" hidden>
+        <div class="admin-subpanel__header">
+          <h2>Ready for Review</h2>
+          <button id="admin-review-refresh" class="admin-button" type="button">Refresh</button>
+        </div>
+        <div id="admin-review-results" class="admin-results"></div>
+      </section>
+
+      <section id="admin-contributors-panel" class="admin-subpanel" hidden>
+        <div class="admin-subpanel__header">
+          <h2>Contributors</h2>
+        </div>
+        <form id="admin-contributor-form" class="admin-search">
+          <label>
+            Username
+            <input name="username" autocomplete="off" required>
+          </label>
+          <label>
+            Password
+            <input name="password" type="password" autocomplete="new-password" required>
+          </label>
+          <button class="admin-button admin-button--primary" type="submit">Add Contributor</button>
+          <div id="admin-contributor-error" class="admin-form__error" role="alert"></div>
+        </form>
+        <div id="admin-contributors-results" class="admin-results"></div>
+      </section>
+
+      <nav class="admin-reference" aria-label="Reference material">
+        <span class="admin-reference__label">Reference Material</span>
+        <a href="https://dn711008.ca.archive.org/0/items/IPRLC-Hindi/_HIN_Kirtan%20Sangrah%20Part%201%20Best%20Quality.pdf" target="_blank" rel="noopener noreferrer">Volume 1</a>
+        <a href="https://dn711008.ca.archive.org/0/items/IPRLC-Hindi/_HIN_Kirtan%20Sangrah%20Part%202%20Best%20Quality.pdf" target="_blank" rel="noopener noreferrer">Volume 2</a>
+        <a href="https://dn711008.ca.archive.org/0/items/IPRLC-Hindi/_HIN_Kirtan%20Sangrah%20Part%203%20Best%20Quality.pdf" target="_blank" rel="noopener noreferrer">Volume 3</a>
+        <a href="https://dn711008.ca.archive.org/0/items/IPRLC-Hindi/_HIN_Kirtan%20Sangrah%20Part%204%20Best%20Quality.pdf" target="_blank" rel="noopener noreferrer">Volume 4</a>
+      </nav>
+
+      <form id="admin-search-form" class="admin-search">
+        <label>
+          Search
+          <input id="admin-search" type="search" placeholder="ID, title, raag, text..." autocomplete="off">
+        </label>
+        <label>
+          Status
+          <select id="admin-status">
+            <option value="unverified">Unverified</option>
+            <option value="all">All</option>
+            <option value="verified">Verified</option>
+          </select>
+        </label>
+        <button class="admin-button admin-button--primary" type="submit">Search</button>
+      </form>
+
+      <div id="admin-results" class="admin-results"></div>
+      <div class="admin-pager">
+        <button id="admin-prev" class="admin-button" type="button">Previous</button>
+        <span id="admin-page-state"></span>
+        <button id="admin-next" class="admin-button" type="button">Next</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="/admin.js"></script>
+</body>
+</html>

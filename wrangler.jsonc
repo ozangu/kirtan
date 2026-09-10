@@ -1,0 +1,36 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "kirtan",
+  "main": "worker.js",
+  "compatibility_date": "2026-08-09",
+
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*",
+      "/admin",
+      "/admin/",
+      "/cont",
+      "/cont/",
+      "/contribute",
+      "/contribute/",
+      "/contribute.html",
+      "/share-image/kirtans/*",
+      "/kirtan",
+      "/kirtan/*",
+      "/kirtan.html",
+      "/kirtan-template",
+      "/kirtan-template.html",
+      "/kirtan-template.txt"
+    ]
+  },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "kirtan",
+      "database_id": "533548a7-eacd-453d-95c0-268041fcbc09"
+    }
+  ]
+}
