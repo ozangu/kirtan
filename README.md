@@ -1,5 +1,9 @@
 # Pushti Kirtan
 
+![Shri Vallabh](public/images/shrivallabh.png)
+
+<p align="center">|| श्री वल्लभाधीश की जय ||</p>
+
 Pushti Kirtan is an open source devotional archive for preserving, searching,
 reading, and improving Pushtimargiya kirtans.
 
