@@ -28,9 +28,8 @@ This refresh script:
 - keeps only the public `tbl_kirtan` corpus in `backup/kirtan.sql`
 - keeps only the public `tbl_kirtan` corpus in `backup/kirtan.db`
 - regenerates `public/data/kirtans-full.json`
-- regenerates `public/data/kirtans-summary.json` for the public homepage list
 
-The website Worker reads kirtan data from `public/data/kirtans-full.json` for SEO pages and public API search. The homepage reads the smaller `public/data/kirtans-summary.json` static asset so normal browsing does not spend a Worker request just to load the card list.
+The website reads kirtan data from `public/data/kirtans-full.json` for the homepage, SEO pages, and public API search.
 
 If Wrangler is not logged in, run this once:
 

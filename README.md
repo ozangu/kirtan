@@ -66,8 +66,7 @@ want to help make kirtan literature easier to find, read, study, and preserve.
 │   ├── contributor-shell.txt      # Worker-served proofreader shell
 │   ├── contributor.js             # Proofreader UI behavior
 │   ├── data/
-│   │   ├── kirtans-full.json      # Public full kirtan corpus
-│   │   └── kirtans-summary.json   # Smaller public list/search payload
+│   │   └── kirtans-full.json      # Public kirtan corpus
 │   ├── images/                    # Public artwork and page preview images
 │   ├── index.html                 # Home/search page
 │   ├── kirtan.html                # Client-rendered kirtan shell
@@ -95,10 +94,8 @@ Local-only folders and files such as `notes/`, `.wrangler/`, `.env`, and
 The public browsing experience is mostly served from static assets:
 
 - `public/index.html` loads the home/search UI.
-- `public/data/kirtans-summary.json` powers the home page card list with a
-  smaller payload.
-- `public/data/kirtans-full.json` powers detailed public kirtan data and
-  server-rendered SEO pages.
+- `public/data/kirtans-full.json` powers the home page card list, detailed
+  public kirtan data, and server-rendered SEO pages.
 - `public/images/` contains the public artwork used by kirtan cards, kirtan
   pages, and social previews.
 
@@ -301,7 +298,6 @@ That flow is expected to:
 - Regenerate `backup/kirtan.db`.
 - Regenerate `backup/kirtan.sql`.
 - Regenerate `public/data/kirtans-full.json`.
-- Regenerate `public/data/kirtans-summary.json`.
 
 See `housekeeping/README.md` for details.
 

@@ -1,6 +1,6 @@
 const KirtanAPI = (() => {
   const DB_NAME = "pushti-kirtan-cache";
-  const DB_VERSION = 3;
+  const DB_VERSION = 4;
 
   const TTL = {
     list: 7 * 24 * 60 * 60 * 1000,
@@ -8,12 +8,12 @@ const KirtanAPI = (() => {
   };
 
   const KEYS = {
-    list: "kirtans:v3:summary:verified",
-    detail: (id) => `kirtan:v3:${id}`,
+    list: "kirtans:v4:full",
+    detail: (id) => `kirtan:v4:${id}`,
   };
 
   const URLS = {
-    list: "/data/kirtans-summary.json",
+    list: "/data/kirtans-full.json",
   };
 
   const mem = new Map();
@@ -390,7 +390,7 @@ const KirtanAPI = (() => {
 
 
   /* --------------------------------------------------
-     ALL KIRTANS SUMMARY
+     ALL KIRTANS
   -------------------------------------------------- */
 
   async function getAllKirtans() {
@@ -490,7 +490,7 @@ const KirtanAPI = (() => {
 
     /*
       No search term:
-      use the cached summary list for speed.
+      use the cached full public data file.
     */
 
     const list =
