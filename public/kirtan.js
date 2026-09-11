@@ -736,6 +736,23 @@ function fieldValue(k, field) {
   return esc(k[field] ?? "");
 }
 
+function originalTextEditor(value, rows) {
+  return `
+    <label data-original-text-field>
+      <span class="kirtan-admin-edit__field-heading">
+        <span>Original Text</span>
+        <button
+          type="button"
+          class="admin-button kirtan-admin-edit__font-button"
+          data-original-text-font
+          aria-label="Increase original text editor font size"
+        >A+</button>
+      </span>
+      <textarea name="original_text" rows="${rows}" data-original-text-editor>${esc(value ?? "")}</textarea>
+    </label>
+  `;
+}
+
 
 function adminEditForm(k) {
   const isNew =
@@ -808,10 +825,7 @@ function adminEditForm(k) {
             </span>
           </label>
 
-          <label>
-            Original Text
-            <textarea name="original_text" rows="10">${fieldValue(k, "original_text")}</textarea>
-          </label>
+          ${originalTextEditor(k.original_text, 10)}
           <label>
             Meaning / Translation
             <textarea name="translate_text" rows="14">${fieldValue(k, "translate_text")}</textarea>
@@ -938,10 +952,7 @@ function contributorEditForm(k) {
             </span>
           </label>
 
-          <label>
-            Original Text
-            <textarea name="original_text" rows="10">${esc(proposed.original_text ?? k.original_text ?? "")}</textarea>
-          </label>
+          ${originalTextEditor(proposed.original_text ?? k.original_text, 10)}
           <label>
             Meaning / Translation
             <textarea name="translate_text" rows="14">${esc(proposed.translate_text ?? k.translate_text ?? "")}</textarea>
@@ -991,10 +1002,7 @@ function reviewPanelHtml(reviewData) {
         highlightAfter: true,
       })}
       <form class="kirtan-admin-edit" data-admin-review-form>
-        <label>
-          Original Text
-          <textarea name="original_text" rows="12">${esc(proposed.original_text ?? "")}</textarea>
-        </label>
+        ${originalTextEditor(proposed.original_text, 12)}
         <label>
           Meaning / Translation
           <textarea name="translate_text" rows="14">${esc(proposed.translate_text ?? "")}</textarea>
@@ -2035,6 +2043,34 @@ function bindReferenceControls(root) {
     });
 }
 
+function bindOriginalTextFontControls(root) {
+  root
+    .querySelectorAll("[data-original-text-font]")
+    .forEach((button) => {
+      button.addEventListener("click", () => {
+        const field =
+          button.closest("[data-original-text-field]");
+
+        const textarea =
+          field?.querySelector("[data-original-text-editor]");
+
+        if (!textarea) return;
+
+        const current =
+          Number(textarea.dataset.fontSizeStep || "0");
+
+        const next =
+          Math.min(current + 1, 3);
+
+        textarea.dataset.fontSizeStep =
+          String(next);
+
+        button.disabled =
+          next === 3;
+      });
+    });
+}
+
 
 function bindAdminControls(root, k) {
   const isNew =
@@ -2082,6 +2118,7 @@ function bindAdminControls(root, k) {
     });
 
   bindReferenceControls(root);
+  bindOriginalTextFontControls(root);
 
   root
     .querySelector("[data-admin-logout]")
@@ -2277,6 +2314,7 @@ function bindContributorControls(root, k) {
   };
 
   bindReferenceControls(root);
+  bindOriginalTextFontControls(root);
 
   root
     .querySelector("[data-contributor-edit]")
@@ -2350,6 +2388,8 @@ function bindAdminReviewControls(root, k, reviewData) {
 
   const status =
     root.querySelector("[data-admin-review-status]");
+
+  bindOriginalTextFontControls(root);
 
   form?.addEventListener("submit", async (event) => {
     event.preventDefault();

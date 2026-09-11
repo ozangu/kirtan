@@ -851,6 +851,24 @@ async function createRevision(env, row, fields, action, username) {
       action
     )
     .run();
+
+  await env.DB
+    .prepare(`
+      DELETE FROM kirtan_revisions
+      WHERE kirtan_id=?
+      AND id NOT IN (
+        SELECT id
+        FROM kirtan_revisions
+        WHERE kirtan_id=?
+        ORDER BY id DESC
+        LIMIT 3
+      )
+    `)
+    .bind(
+      row.id,
+      row.id
+    )
+    .run();
 }
 
 async function serveAsset(req, env, path) {

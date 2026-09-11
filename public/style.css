@@ -1962,6 +1962,33 @@ a:hover {
   letter-spacing: 0;
 }
 
+.kirtan-admin-edit__field-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.kirtan-admin-edit__font-button {
+  min-height: 2rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.78rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.kirtan-admin-edit textarea[data-original-text-editor][data-font-size-step="1"] {
+  font-size: 1.08rem;
+}
+
+.kirtan-admin-edit textarea[data-original-text-editor][data-font-size-step="2"] {
+  font-size: 1.24rem;
+}
+
+.kirtan-admin-edit textarea[data-original-text-editor][data-font-size-step="3"] {
+  font-size: 1.42rem;
+}
+
 .admin-form input:focus,
 .admin-search input:focus,
 .admin-search select:focus,
