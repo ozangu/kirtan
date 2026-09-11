@@ -29,7 +29,7 @@ This refresh script:
 - keeps only the public `tbl_kirtan` corpus in `backup/kirtan.db`
 - regenerates `public/data/kirtans-full.json`
 
-The website reads kirtan data from `public/data/kirtans-full.json` for the homepage, SEO pages, and public API search.
+The website Worker reads kirtan data from `public/data/kirtans-full.json` for SEO pages, public API search, homepage pagination, and filter summary routes.
 
 If Wrangler is not logged in, run this once:
 

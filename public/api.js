@@ -1,19 +1,14 @@
 const KirtanAPI = (() => {
   const DB_NAME = "pushti-kirtan-cache";
-  const DB_VERSION = 4;
+  const DB_VERSION = 6;
 
   const TTL = {
-    list: 7 * 24 * 60 * 60 * 1000,
+    list: 5 * 60 * 1000,
     detail: 7 * 24 * 60 * 60 * 1000,
   };
 
   const KEYS = {
-    list: "kirtans:v4:full",
-    detail: (id) => `kirtan:v4:${id}`,
-  };
-
-  const URLS = {
-    list: "/data/kirtans-full.json",
+    detail: (id) => `kirtan:v6:${id}`,
   };
 
   const mem = new Map();
@@ -256,156 +251,31 @@ const KirtanAPI = (() => {
 
 
   /* --------------------------------------------------
-     LOCAL FILTERING
+     API URLS
   -------------------------------------------------- */
 
-  function filterList(
-    list,
-    {
-      q = "",
-      raag = "",
-      type = ""
-    } = {}
-  ) {
+  function kirtanListUrl(params = {}) {
+    const p =
+      new URLSearchParams();
 
-    const term =
-      q
-        .trim()
-        .toLowerCase();
+    p.set(
+      "summary",
+      "1"
+    );
 
-    return list.filter(
-      (k) => {
+    for (const key of ["q", "raag", "type"]) {
+      const value =
+        String(params[key] || "").trim();
 
-        if (Number(k?.verified) !== 1) {
-          return false;
-        }
-
-        if (
-          raag &&
-          k.raag !== raag
-        ) {
-          return false;
-        }
-
-        if (
-          type &&
-          k.type !== type
-        ) {
-          return false;
-        }
-
-        if (!term) {
-          return true;
-        }
-
-
-        const hay = [
-          k.title,
-          k.preview,
-          k.original_text,
-          k.translate_text,
-          k.transliterate_text
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-
-
-        return hay.includes(
-          term
+      if (value) {
+        p.set(
+          key,
+          value
         );
       }
-    );
-  }
+    }
 
-
-  /* --------------------------------------------------
-     DEPENDENT RAAG / OCCASION FILTERS
-  -------------------------------------------------- */
-
-  function filtersFromList(
-    list,
-    {
-      raag = "",
-      type = ""
-    } = {}
-  ) {
-
-    /*
-      If Occasion/type is selected,
-      only show Raags that exist for it.
-    */
-
-    const verified =
-      list.filter(
-        (k) => Number(k?.verified) === 1
-      );
-
-    const raags = [
-      ...new Set(
-        verified
-          .filter(
-            (k) =>
-              k.raag &&
-              (
-                !type ||
-                k.type === type
-              )
-          )
-          .map(
-            (k) => k.raag
-          )
-      ),
-    ].sort();
-
-
-    /*
-      If Raag is selected,
-      only show Occasions that exist for it.
-    */
-
-    const types = [
-      ...new Set(
-        verified
-          .filter(
-            (k) =>
-              k.type &&
-              (
-                !raag ||
-                k.raag === raag
-              )
-          )
-          .map(
-            (k) => k.type
-          )
-      ),
-    ].sort();
-
-
-    return {
-      raags,
-      types
-    };
-  }
-
-
-  /* --------------------------------------------------
-     ALL KIRTANS
-  -------------------------------------------------- */
-
-  async function getAllKirtans() {
-
-    const list =
-      await cached(
-        KEYS.list,
-        URLS.list,
-        TTL.list
-      );
-
-    return list.filter(
-      (k) => Number(k?.verified) === 1
-    );
-
+    return `/api/kirtans?${p.toString()}`;
   }
 
 
@@ -413,97 +283,17 @@ const KirtanAPI = (() => {
      HOMEPAGE SEARCH + FILTERS
   -------------------------------------------------- */
 
+  async function getAllKirtans() {
+    return fetchJSON(
+      kirtanListUrl()
+    );
+  }
+
   async function getKirtans(
     params = {}
   ) {
-
-    const q =
-      (
-        params.q ||
-        ""
-      ).trim();
-
-    const raag =
-      (
-        params.raag ||
-        ""
-      ).trim();
-
-    const type =
-      (
-        params.type ||
-        ""
-      ).trim();
-
-
-    /*
-      If the user entered a search term,
-      search the actual D1 database.
-
-      worker.js searches:
-
-      original_text
-      translate_text
-      transliterate_text
-      title
-
-      This allows both Hindi and English searches.
-    */
-
-    if (q) {
-
-      const p =
-        new URLSearchParams();
-
-      p.set(
-        "summary",
-        "1"
-      );
-
-      p.set(
-        "q",
-        q
-      );
-
-
-      if (raag) {
-        p.set(
-          "raag",
-          raag
-        );
-      }
-
-
-      if (type) {
-        p.set(
-          "type",
-          type
-        );
-      }
-
-
-      return fetchJSON(
-        `/api/kirtans?${p.toString()}`
-      );
-    }
-
-
-    /*
-      No search term:
-      use the cached full public data file.
-    */
-
-    const list =
-      await getAllKirtans();
-
-
-    return filterList(
-      list,
-      {
-        q: "",
-        raag,
-        type
-      }
+    return fetchJSON(
+      kirtanListUrl(params)
     );
   }
 
@@ -512,16 +302,27 @@ const KirtanAPI = (() => {
      FILTER OPTIONS
   -------------------------------------------------- */
 
-  async function getFilters(
-    params = {}
-  ) {
+  async function getFilters(params = {}) {
+    const p =
+      new URLSearchParams();
 
-    const list =
-      await getAllKirtans();
+    for (const key of ["raag", "type"]) {
+      const value =
+        String(params[key] || "").trim();
 
-    return filtersFromList(
-      list,
-      params
+      if (value) {
+        p.set(
+          key,
+          value
+        );
+      }
+    }
+
+    const query =
+      p.toString();
+
+    return fetchJSON(
+      `/api/filters${query ? `?${query}` : ""}`
     );
   }
 

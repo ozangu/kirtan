@@ -94,8 +94,9 @@ Local-only folders and files such as `notes/`, `.wrangler/`, `.env`, and
 The public browsing experience is mostly served from static assets:
 
 - `public/index.html` loads the home/search UI.
-- `public/data/kirtans-full.json` powers the home page card list, detailed
-  public kirtan data, and server-rendered SEO pages.
+- `public/data/kirtans-full.json` powers detailed public kirtan data and
+  server-rendered SEO pages.
+- The home page card list and filters load through Worker API summary routes.
 - `public/images/` contains the public artwork used by kirtan cards, kirtan
   pages, and social previews.
 
