@@ -4773,18 +4773,6 @@ export default {
       "/api/filters"
     ) {
 
-      const raag =
-        (
-          u.searchParams.get("raag") ||
-          ""
-        ).trim();
-
-      const type =
-        (
-          u.searchParams.get("type") ||
-          ""
-        ).trim();
-
       const rows =
         (
           await getStaticPublicKirtans(
@@ -4797,10 +4785,6 @@ export default {
         raags: [
           ...new Set(
             rows
-              .filter((row) =>
-                !type ||
-                row.type === type
-              )
               .map((row) => row.raag)
               .filter(Boolean)
           ),
@@ -4808,10 +4792,6 @@ export default {
         types: [
           ...new Set(
             rows
-              .filter((row) =>
-                !raag ||
-                row.raag === raag
-              )
               .map((row) => row.type)
               .filter(Boolean)
           ),

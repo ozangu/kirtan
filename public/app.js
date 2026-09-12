@@ -246,10 +246,7 @@ async function refreshFilters(
   const prevType =
     current.type ?? T.value;
 
-  const f = await KirtanAPI.getFilters({
-    raag: prevRaag,
-    type: prevType
-  });
+  const f = await KirtanAPI.getFilters();
 
   populateSelect(
     R,
