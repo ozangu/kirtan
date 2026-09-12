@@ -4786,20 +4786,21 @@ export default {
         ).trim();
 
       const rows =
-        await filterStaticPublicKirtans(
-          env,
-          u.origin,
-          {
-            raag,
-            type,
-            summary: true,
-          }
-        );
+        (
+          await getStaticPublicKirtans(
+            env,
+            u.origin
+          )
+        ).filter(isVerifiedPublicKirtan);
 
       return cachedJson({
         raags: [
           ...new Set(
             rows
+              .filter((row) =>
+                !type ||
+                row.type === type
+              )
               .map((row) => row.raag)
               .filter(Boolean)
           ),
@@ -4807,6 +4808,10 @@ export default {
         types: [
           ...new Set(
             rows
+              .filter((row) =>
+                !raag ||
+                row.raag === raag
+              )
               .map((row) => row.type)
               .filter(Boolean)
           ),
