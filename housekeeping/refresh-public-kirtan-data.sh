@@ -153,6 +153,7 @@ echo "  $SQL_PATH"
 echo "  $DB_PATH"
 echo "  $ROOT_DIR/public/data/kirtans-full.json"
 
+echo "Publishing the Proof Read Kirtans to GitHub ..."
 git add -A
 git commit -m 'Adding New Proof Read Kirtans'
 git push
