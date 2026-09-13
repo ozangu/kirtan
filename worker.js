@@ -50,6 +50,25 @@ const SOCIAL_IMAGE_WIDTH = 1200;
 const SOCIAL_IMAGE_HEIGHT = 630;
 const SOCIAL_IMAGE_QUALITY = 72;
 const SOCIAL_DESCRIPTION_MAX_LENGTH = 520;
+const SITE_SEO_TOPICS = [
+  "Pushtimarg",
+  "Pushtimargiya kirtans",
+  "Braj Bhasha",
+  "Vraj Bhasha",
+  "Hindi kirtans",
+  "Khari Boli",
+  "Kari Boli",
+  "Ashtasakha",
+  "Ashtachhap",
+  "Surdas",
+  "Kumbhandas",
+  "Parmanandas",
+  "Vraj",
+  "Shrinathji",
+  "Nathdwara",
+  "Krishna",
+  "Haveli Sangeet",
+];
 const loginAttempts = new Map();
 const queryCache = new Map();
 
@@ -1446,8 +1465,7 @@ function buildKirtanJsonLd({ kirtan, pageUrl, image, description }) {
       url: "https://pushtikirtan.com/",
     },
     about: [
-      "Pushtimargiya Kirtan",
-      "Vraj Bhasha devotional poetry",
+      ...SITE_SEO_TOPICS,
       formatSeoLabel(kirtan.raag),
       formatSeoLabel(kirtan.type),
     ].filter(Boolean),
@@ -1458,6 +1476,9 @@ function buildKirtanJsonLd({ kirtan, pageUrl, image, description }) {
 }
 
 function buildKirtanMeta({ kirtan, pageUrl, image }) {
+  const titleParts =
+    kirtanTitleParts(kirtan);
+
   const title =
     kirtan.title
       ? `${kirtan.title} - Pushti Kirtan`
@@ -1480,7 +1501,17 @@ function buildKirtanMeta({ kirtan, pageUrl, image }) {
   return `
   <title>${escapeHtml(title)}</title>
   <link rel="canonical" href="${escapeHtml(pageUrl)}">
+  <meta name="keywords" content="${escapeHtml([
+    titleParts.roman,
+    titleParts.devanagari,
+    formatSeoLabel(kirtan.raag),
+    formatSeoLabel(kirtan.type),
+    ...SITE_SEO_TOPICS,
+  ].filter(Boolean).join(", "))}">
+  <meta name="robots" content="index, follow, max-image-preview:large">
   <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="hi_IN">
   <meta property="og:site_name" content="Pushti Kirtan">
   <meta property="og:title" content="${escapeHtml(title)}">
   <meta property="og:url" content="${escapeHtml(pageUrl)}">
@@ -2259,7 +2290,7 @@ async function serveSocialImage(req, env, url) {
   }
 }
 
-function pageShell({ title, description, canonical, body, jsonLd, image }) {
+function pageShell({ title, description, canonical, body, jsonLd, image, keywords = [] }) {
   const origin =
     new URL(canonical).origin;
 
@@ -2283,8 +2314,12 @@ function pageShell({ title, description, canonical, body, jsonLd, image }) {
   <title>${escapeHtml(title)}</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <meta name="description" content="${escapeHtml(description)}">
+  ${keywords.length ? `<meta name="keywords" content="${escapeHtml(keywords.filter(Boolean).join(", "))}">` : ""}
+  <meta name="robots" content="index, follow, max-image-preview:large">
   <link rel="canonical" href="${escapeHtml(canonical)}">
   <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="hi_IN">
   <meta property="og:site_name" content="Pushti Kirtan">
   <meta property="og:title" content="${escapeHtml(title)}">
   <meta property="og:description" content="${escapeHtml(description)}">
@@ -2351,17 +2386,12 @@ function pageShell({ title, description, canonical, body, jsonLd, image }) {
 
 function collectionIntro(kind, label, count) {
   return kind === "raag"
-    ? `Read ${count} Pushtimargiya kirtans in ${label} with original text, English meanings, raag context, and devotional metadata.`
-    : `Read ${count} Pushtimargiya kirtans for ${label} with original text, English meanings, raag, and devotional metadata.`;
+    ? `Read ${count} Pushtimargiya kirtans in ${label} with original Braj/Vraj Bhasha text, Hindi kirtan poetry, English meanings, transliteration, and Haveli Sangeet context.`
+    : `Read ${count} Pushtimargiya kirtans for ${label} with original Braj/Vraj Bhasha text, English meanings, transliteration, raag, and devotional context.`;
 }
 
-function collectionShareDescription(kind, label) {
-  const prefix =
-    kind === "raag"
-      ? "Raag"
-      : "Occasion";
-
-  return `${prefix}: ${label}`;
+function collectionShareDescription(kind, label, count) {
+  return collectionIntro(kind, label, count);
 }
 
 async function serveCollectionPage(req, env, url, kind, slug) {
@@ -2434,7 +2464,9 @@ async function serveCollectionPage(req, env, url, kind, slug) {
     collectionDisplayTitle(value);
 
   const title =
-    `${displayHeading} - Pushti Kirtan`;
+    kind === "raag"
+      ? `${displayHeading} Raag Kirtans - Pushti Kirtan`
+      : `${displayHeading} Kirtans - Pushti Kirtan`;
 
   const canonical =
     absoluteUrl(url.origin, canonicalPath);
@@ -2445,7 +2477,8 @@ async function serveCollectionPage(req, env, url, kind, slug) {
   const description =
     collectionShareDescription(
       kind,
-      displayHeading
+      displayHeading,
+      collectionRows.length
     );
 
   const previewImage =
@@ -2465,6 +2498,11 @@ async function serveCollectionPage(req, env, url, kind, slug) {
     description,
     image: previewImage?.url,
     inLanguage: ["en", "hi"],
+    about: [
+      displayHeading,
+      kind === "raag" ? "Raag" : "Pushtimarg occasion",
+      ...SITE_SEO_TOPICS,
+    ].filter(Boolean),
     isPartOf: {
       "@type": "WebSite",
       "@id": "https://pushtikirtan.com/#website",
@@ -2493,6 +2531,7 @@ async function serveCollectionPage(req, env, url, kind, slug) {
     <section class="collection-hero">
       <p class="collection-hero__eyebrow">${kind === "raag" ? "Raag" : "Occasion"}</p>
       <h1>${escapeHtml(displayHeading)}</h1>
+      <p>${escapeHtml(collectionIntro(kind, displayHeading, collectionRows.length))}</p>
       <a class="collection-hero__filter" href="${escapeHtml(filterParam)}">Open this collection in search</a>
     </section>
     <section class="collection-list" aria-label="${escapeHtml(displayHeading)}">
@@ -2530,6 +2569,11 @@ async function serveCollectionPage(req, env, url, kind, slug) {
       body,
       jsonLd,
       image: previewImage,
+      keywords: [
+        displayHeading,
+        kind === "raag" ? `${displayHeading} raag kirtans` : `${displayHeading} kirtans`,
+        ...SITE_SEO_TOPICS,
+      ],
     }),
     {
       headers: {
