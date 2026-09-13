@@ -152,3 +152,7 @@ echo "Updated:"
 echo "  $SQL_PATH"
 echo "  $DB_PATH"
 echo "  $ROOT_DIR/public/data/kirtans-full.json"
+
+git add -A
+git commit -m 'Adding New Proof Read Kirtans'
+git push
