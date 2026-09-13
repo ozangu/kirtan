@@ -2386,8 +2386,8 @@ function pageShell({ title, description, canonical, body, jsonLd, image, keyword
 
 function collectionIntro(kind, label, count) {
   return kind === "raag"
-    ? `Read ${count} Pushtimargiya kirtans in ${label} with original Braj/Vraj Bhasha text, Hindi kirtan poetry, English meanings, transliteration, and Haveli Sangeet context.`
-    : `Read ${count} Pushtimargiya kirtans for ${label} with original Braj/Vraj Bhasha text, English meanings, transliteration, raag, and devotional context.`;
+    ? `Read ${count} Pushtimargiya kirtans in ${label} with original Braj Bhasha text and English meanings.`
+    : `Read ${count} Pushtimargiya kirtans for ${label} with original Braj Bhasha text and English meanings.`;
 }
 
 function collectionShareDescription(kind, label, count) {
