@@ -1788,6 +1788,8 @@ a:hover {
   line-height: 1.8;
   color: var(--text-secondary);
   margin-bottom: 2.5rem;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .legal-doc__actions {
@@ -1834,6 +1836,8 @@ a:hover {
   line-height: 1.75;
   color: var(--text-secondary);
   margin: 0 0 0.85rem;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .legal-section p:last-child {
@@ -1852,10 +1856,20 @@ a:hover {
 
 .legal-section li {
   margin-bottom: 0.35rem;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .legal-section li:last-child {
   margin-bottom: 0;
+}
+
+@media (max-width: 560px) {
+  .legal-doc__intro,
+  .legal-section p,
+  .legal-section li {
+    text-align: left;
+  }
 }
 
 /* ── Admin ── */

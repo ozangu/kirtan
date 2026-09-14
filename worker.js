@@ -2003,11 +2003,6 @@ async function serveSitemap(env, url) {
       changefreq: "monthly",
     },
     {
-      loc: absoluteUrl(url.origin, "/reuse"),
-      priority: "0.5",
-      changefreq: "monthly",
-    },
-    {
       loc: absoluteUrl(url.origin, "/contact.html"),
       priority: "0.3",
       changefreq: "monthly",
@@ -2374,8 +2369,6 @@ function pageShell({ title, description, canonical, body, jsonLd, image, keyword
   ${body}
   <footer class="site-footer wrap">
     <nav class="site-footer__nav" aria-label="Footer">
-      <a href="/reuse">Reuse Data</a>
-      <span aria-hidden="true">·</span>
       <a href="/contribute-code.html">Developers</a>
       <span aria-hidden="true">·</span>
       <a href="/contribute-proofread.html">Proofreaders</a>
@@ -2814,17 +2807,6 @@ export default {
       u.pathname === "/sitemap.xml"
     ) {
       return serveSitemap(env, u);
-    }
-
-    if (
-      req.method === "GET" &&
-      (
-        u.pathname === "/reuse.html" ||
-        u.pathname === "/reuse/"
-      )
-    ) {
-      u.pathname = "/reuse";
-      return Response.redirect(u.toString(), 301);
     }
 
     if (

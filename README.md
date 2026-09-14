@@ -63,7 +63,6 @@ want to help make kirtan literature easier to find, read, study, and preserve.
 │   ├── contribute-code.html       # Developer contribution page
 │   ├── contribute-proofread.html  # Proofreader contribution page
 │   ├── contribute.html            # Legacy redirect page
-│   ├── reuse.html                 # Public data reuse and download page
 │   ├── contributor-shell.txt      # Worker-served proofreader shell
 │   ├── contributor.js             # Proofreader UI behavior
 │   ├── data/
@@ -107,7 +106,6 @@ The Worker in `worker.js` handles:
 - Legacy kirtan URLs such as `/kirtan.html?id=1`.
 - Raag pages such as `/raag/devagandhar`.
 - Occasion pages such as `/occasion/001-janmashtami-ki-badhai`.
-- Public reuse and download guidance at `/reuse`.
 - Social preview image routing for platforms such as WhatsApp.
 - Public API routes used by the frontend.
 - Private admin and proofreader API routes.
@@ -136,7 +134,6 @@ Contribution pages use these URLs:
 ```text
 https://pushtikirtan.com/contribute-code.html
 https://pushtikirtan.com/contribute-proofread.html
-https://pushtikirtan.com/reuse
 ```
 
 The old `/contribute.html` page is kept only as a legacy redirect to the
@@ -377,88 +374,6 @@ Do not commit:
 
 The committed `backup/kirtan.db` and `backup/kirtan.sql` files should contain
 only the public `tbl_kirtan` table.
-
-## Public Corpus Reuse
-
-The sanitized public database exports in `backup/` and the public images in
-`public/images/` are provided so readers, researchers, developers, and
-community projects may download, study, copy, adapt, and reuse them in a
-respectful manner. Any person or organization using this material does so at
-their own risk and is solely responsible for their own copying, publication,
-adaptation, distribution, interpretation, compliance, and downstream use.
-
-Unless a file or record states otherwise, the maintainers intend to make the
-project's curated public corpus available under the Creative Commons
-Attribution 4.0 International License (`CC BY 4.0`):
-
-```text
-https://creativecommons.org/licenses/by/4.0/
-```
-
-To the extent the maintainers are legally able to grant permission, this
-includes:
-
-- The sanitized `backup/kirtan.db` and `backup/kirtan.sql` exports.
-- Public JSON corpus exports generated from verified records.
-- AI-generated images created from kirtan descriptions.
-- AI-assisted English meanings and transliterations that have been reviewed or
-  accepted into the public corpus.
-- Human spelling corrections, proofreading, metadata organization, and other
-  editorial contributions included in verified public records.
-
-Any reuse must preserve the dignity, honor, and devotional character of
-Pushtimarg, Shri Krishna, Shri Vallabh, Shri Gusainji, Shrinathji, the
-Ashtasakha and Ashtachhap poets, and the Vaishnav tradition. Reuse must not
-present altered, incomplete, or machine-generated material as authoritative
-scriptural, liturgical, scholarly, or lineage-approved text.
-
-When reusing the public corpus, give reasonable attribution, for example:
-
-```text
-Data and images adapted from PushtiKirtan.com, licensed under CC BY 4.0 where applicable.
-```
-
-Also link to:
-
-```text
-https://pushtikirtan.com
-https://creativecommons.org/licenses/by/4.0/
-```
-
-Only verified kirtans may be reused as public corpus material. In database
-terms, a kirtan is approved for public reuse only when the `verified` column in
-`tbl_kirtan` is true / `1`. Records where `verified` is false / `0` are drafts
-or unverified working material and must not be published, redistributed,
-indexed, quoted as reliable, or used to train another public archive.
-
-The original Hindi/Vraj/Braj Bhasha kirtan texts may include traditional,
-historical, public-domain, or third-party source material. This project does
-not grant rights it does not own. Reusers are responsible for confirming that
-their intended use is lawful in their jurisdiction and appropriate for their
-community context.
-
-The public corpus, images, database files, translations, transliterations,
-metadata, software, documentation, and all related materials are provided "as
-is" and "as available," without warranties, representations, guarantees,
-promises, or conditions of any kind, whether express, implied, statutory, or
-otherwise. Without limitation, PushtiKirtan.com and its maintainers disclaim
-any warranties of accuracy, completeness, authenticity, reliability,
-availability, fitness for a particular purpose, non-infringement, title,
-merchantability, devotional suitability, scholarly correctness, liturgical
-correctness, or acceptance by any person, temple, lineage, institution,
-community, platform, search engine, or authority.
-
-PushtiKirtan.com and its maintainers are not responsible or liable for any
-claim, dispute, loss, damage, cost, expense, correction, takedown, misuse,
-misinterpretation, offense, reliance, publication decision, legal consequence,
-religious or community concern, data error, translation error, image error,
-technical failure, service interruption, search ranking result, or other
-matter arising from or related to use of the project, website, database,
-images, exports, code, documentation, or public corpus. Reusers agree that
-they are solely responsible for reviewing the material before use, obtaining
-any permissions they need, complying with applicable law, respecting devotional
-and community norms, and removing or correcting material if their use requires
-it.
 
 Before publishing a release or making sensitive changes, run:
 
