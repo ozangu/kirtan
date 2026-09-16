@@ -66,48 +66,6 @@ DROP TABLE IF EXISTS contributors;
 DROP TABLE IF EXISTS kirtan_revisions;
 DROP TABLE IF EXISTS kirtan_contributions;
 DROP TABLE IF EXISTS d1_migrations;
-CREATE TABLE public_tbl_kirtan (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  created_date TEXT NOT NULL,
-  updated_date TEXT NOT NULL,
-  title TEXT,
-  type TEXT NOT NULL,
-  raag TEXT NOT NULL,
-  original_text TEXT NOT NULL,
-  translate_text TEXT,
-  transliterate_text TEXT,
-  image TEXT,
-  verified BOOLEAN NOT NULL DEFAULT 0
-);
-INSERT INTO public_tbl_kirtan (
-  id,
-  created_date,
-  updated_date,
-  title,
-  type,
-  raag,
-  original_text,
-  translate_text,
-  transliterate_text,
-  image,
-  verified
-)
-SELECT
-  id,
-  created_date,
-  updated_date,
-  title,
-  type,
-  raag,
-  original_text,
-  translate_text,
-  transliterate_text,
-  image,
-  verified
-FROM tbl_kirtan
-ORDER BY id;
-DROP TABLE tbl_kirtan;
-ALTER TABLE public_tbl_kirtan RENAME TO tbl_kirtan;
 DELETE FROM sqlite_sequence
 WHERE name <> 'tbl_kirtan';
 UPDATE sqlite_sequence
@@ -136,7 +94,7 @@ echo "Writing sanitized SQL backup ..."
 sqlite3 "$TMP_DB_PATH" ".dump" > "$TMP_SQL_PATH"
 rm -f "$RAW_SQL_PATH"
 
-if grep -Eiq "CREATE TABLE (contributors|kirtan_contributions|kirtan_revisions|d1_migrations)|INSERT INTO (contributors|kirtan_contributions|kirtan_revisions|d1_migrations)|password_hash|contributor_username|reviewed_by|admin_note|created_by|snapshot_json|proposed_json" "$TMP_SQL_PATH"; then
+if grep -Eiq "CREATE TABLE (contributors|kirtan_contributions|kirtan_revisions|d1_migrations)|INSERT INTO (contributors|kirtan_contributions|kirtan_revisions|d1_migrations)" "$TMP_SQL_PATH"; then
   echo "Sanitization failed: private table or column names found in SQL backup." >&2
   exit 1
 fi

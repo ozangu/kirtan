@@ -20,18 +20,7 @@ fi
 mkdir -p "$OUT_DIR"
 
 sqlite3 -json "$DB_PATH" "
-  SELECT
-    id,
-    created_date,
-    updated_date,
-    title,
-    type,
-    raag,
-    original_text,
-    translate_text,
-    transliterate_text,
-    image,
-    verified
+  SELECT *
   FROM tbl_kirtan
   ORDER BY id;
 " > "$TMP_PATH"
