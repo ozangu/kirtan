@@ -576,13 +576,6 @@ function bindServerRenderedPublicKirtan(content, id) {
   return true;
 }
 
-function hasPrivateKirtanSessionCookie() {
-  return /(?:^|;\s*)(?:pk_admin|pk_contributor)=/.test(
-    document.cookie || ""
-  );
-}
-
-
 function firstMeaningfulLine(content) {
   return String(content ?? "")
     .split(/\r?\n/)
@@ -1045,16 +1038,6 @@ async function load() {
   const reviewId =
     params.get("review");
 
-  if (
-    id &&
-    !isNew &&
-    !reviewId &&
-    !hasPrivateKirtanSessionCookie() &&
-    bindServerRenderedPublicKirtan(content, id)
-  ) {
-    return;
-  }
-
   const session =
     await adminSession();
 
@@ -1068,6 +1051,17 @@ async function load() {
 
   const isContributor =
     Boolean(contributor.authenticated);
+
+  if (
+    id &&
+    !isNew &&
+    !reviewId &&
+    !isAdmin &&
+    !isContributor &&
+    bindServerRenderedPublicKirtan(content, id)
+  ) {
+    return;
+  }
 
   if (isNew) {
     if (!isAdmin) {
