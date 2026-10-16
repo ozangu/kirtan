@@ -643,19 +643,11 @@ a:hover {
   transform: translateY(-1px);
 }
 
-.collection-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
-  gap: 1rem;
-}
-
 .collection-card {
-  display: grid;
-  grid-template-columns: 5rem minmax(0, 1fr);
-  gap: 0.9rem;
-  padding: 0.8rem;
+  display: block;
+  overflow: hidden;
   border: 1px solid rgba(95, 76, 58, 0.08);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.88);
   box-shadow: var(--shadow-sm);
   transition:
@@ -674,7 +666,6 @@ a:hover {
   display: block;
   aspect-ratio: 1;
   overflow: hidden;
-  border-radius: var(--radius-sm);
   background: var(--bg);
 }
 
@@ -692,6 +683,7 @@ a:hover {
 
 .collection-card__body {
   min-width: 0;
+  padding: 1rem 1.1rem 1.15rem;
 }
 
 .collection-card h2 {
@@ -803,14 +795,16 @@ a:hover {
 }
 
 /* ── Card grid ── */
-.kirtan-grid {
+.kirtan-grid,
+.collection-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1.25rem;
 }
 
 @media (min-width: 768px) {
-  .kirtan-grid {
+  .kirtan-grid,
+  .collection-list {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1.5rem;
   }
