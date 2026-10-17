@@ -1,0 +1,135 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Pushti Kirtan Public Read API",
+    "version": "1.0.0",
+    "description": "Search and retrieve published Pushtimargiya kirtans. No authentication required. Cite each result's canonical url. type means occasion; translate_text is English meaning; transliterate_text is Roman transliteration. Missing text is unavailable. Access does not grant an additional content license.",
+    "termsOfService": "https://pushtikirtan.com/legal.html"
+  },
+  "servers": [{ "url": "https://pushtikirtan.com" }],
+  "security": [],
+  "paths": {
+    "/api/search": {
+      "get": {
+        "operationId": "searchKirtans",
+        "summary": "Search published kirtans with bounded, paginated results",
+        "description": "q matches a substring/phrase in title, original text, English meaning, transliteration, raag, or occasion. Matching ignores case and Latin accents and supports Devanagari. Not semantic search. Results sort by numeric ID ascending. Use exact raag/type values from /api/filters. Follow next for additional pages. With no filters, lists all published kirtans.",
+        "parameters": [
+          { "name": "q", "in": "query", "description": "Text phrase to find", "schema": { "type": "string", "maxLength": 200 } },
+          { "name": "raag", "in": "query", "description": "Exact raag value from /api/filters", "schema": { "type": "string", "maxLength": 300 } },
+          { "name": "type", "in": "query", "description": "Exact occasion value from /api/filters", "schema": { "type": "string", "maxLength": 300 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 25 } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer", "minimum": 0, "default": 0 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of matching published kirtans",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SearchPage" } } }
+          },
+          "400": { "description": "Invalid query length, limit, or offset" }
+        }
+      }
+    },
+    "/api/filters": {
+      "get": {
+        "operationId": "listKirtanFilters",
+        "summary": "List exact raag and occasion filter values",
+        "parameters": [
+          { "name": "type", "in": "query", "description": "Optional exact occasion value to restrict returned raags", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Available filters; types are occasions",
+            "content": { "application/json": { "schema": {
+              "type": "object",
+              "required": ["raags", "types"],
+              "properties": {
+                "raags": { "type": "array", "items": { "type": "string" } },
+                "types": { "type": "array", "items": { "type": "string" } }
+              }
+            } } }
+          }
+        }
+      }
+    },
+    "/api/kirtans/{id}": {
+      "get": {
+        "operationId": "getKirtan",
+        "summary": "Retrieve a published kirtan's full text and metadata",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "minimum": 1 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Published kirtan",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Kirtan" } } }
+          },
+          "404": { "description": "No published kirtan with this ID" }
+        }
+      }
+    },
+    "/kirtan/{slug}.md": {
+      "get": {
+        "operationId": "readKirtanMarkdown",
+        "summary": "Read a kirtan as Markdown, with a canonical source citation",
+        "description": "Use the markdown_url from a search result. Slugs end with the numeric kirtan ID. A stale slug redirects to the current one.",
+        "parameters": [
+          { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Original text, meaning, and transliteration where available", "content": { "text/markdown": { "schema": { "type": "string" } } } },
+          "301": { "description": "Redirect to the current canonical Markdown URL" },
+          "404": { "description": "Kirtan not found or not published" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SearchPage": {
+        "type": "object",
+        "required": ["total", "limit", "offset", "results", "next", "previous"],
+        "properties": {
+          "total": { "type": "integer" },
+          "limit": { "type": "integer" },
+          "offset": { "type": "integer" },
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/SearchResult" } },
+          "next": { "type": ["string", "null"], "format": "uri" },
+          "previous": { "type": ["string", "null"], "format": "uri" }
+        }
+      },
+      "SearchResult": {
+        "type": "object",
+        "required": ["id", "title", "url", "markdown_url", "json_url"],
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string" },
+          "raag": { "type": ["string", "null"] },
+          "type": { "type": ["string", "null"], "description": "Occasion" },
+          "image": { "type": ["string", "null"] },
+          "preview": { "type": "string", "description": "First 100 characters of original_text" },
+          "verified": { "type": ["integer", "string"], "description": "Publication flag, not a guarantee of theological accuracy" },
+          "url": { "type": "string", "format": "uri", "description": "Canonical human-readable source URL for citation" },
+          "markdown_url": { "type": "string", "format": "uri" },
+          "json_url": { "type": "string", "format": "uri" }
+        }
+      },
+      "Kirtan": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string" },
+          "raag": { "type": ["string", "null"] },
+          "type": { "type": ["string", "null"], "description": "Occasion" },
+          "original_text": { "type": ["string", "null"], "description": "Original composition, commonly Braj/Vraj Bhasha in Devanagari" },
+          "translate_text": { "type": ["string", "null"], "description": "English meaning" },
+          "transliterate_text": { "type": ["string", "null"], "description": "Roman transliteration" },
+          "image": { "type": ["string", "null"] },
+          "verified": { "type": ["integer", "string"] },
+          "created_date": { "type": ["string", "null"] },
+          "updated_date": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}

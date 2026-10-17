@@ -1116,7 +1116,7 @@ async function filterStaticPublicKirtans(
   } = {}
 ) {
   const term =
-    String(q || "").trim().toLowerCase();
+    normalizePublicSearchText(q).trim();
 
   const rows =
     await getStaticPublicKirtans(env, origin);
@@ -1144,14 +1144,21 @@ async function filterStaticPublicKirtans(
         row.original_text,
         row.translate_text,
         row.transliterate_text,
+        row.raag,
+        row.type,
       ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
 
-      return hay.includes(term);
+      return normalizePublicSearchText(hay).includes(term);
     })
     .map((row) => summary ? publicKirtanSummary(row) : row);
+}
+
+function normalizePublicSearchText(value) {
+  return String(value || "").normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "").normalize("NFC").toLowerCase();
 }
 
 function removeEndingMarker(content) {
@@ -1501,6 +1508,10 @@ function buildKirtanMeta({ kirtan, pageUrl, image }) {
   return `
   <title>${escapeHtml(title)}</title>
   <link rel="canonical" href="${escapeHtml(pageUrl)}">
+  <link rel="alternate" type="text/markdown" href="${escapeHtml(pageUrl)}.md" title="Kirtan text">
+  <link rel="alternate" type="application/json" href="/api/kirtans/${Number(kirtan.id)}" title="Kirtan data">
+  <link rel="help" href="/llms.txt" type="text/plain" title="AI and programmatic access">
+  <link rel="service-desc" href="/openapi.json" type="application/json" title="Public API">
   <meta name="keywords" content="${escapeHtml([
     titleParts.roman,
     titleParts.devanagari,
@@ -1988,6 +1999,11 @@ async function serveSitemap(env, url) {
 
   const staticPages = [
     {
+      loc: absoluteUrl(url.origin, "/browse"),
+      priority: "0.8",
+      changefreq: "weekly",
+    },
+    {
       loc: absoluteUrl(url.origin, "/"),
       priority: "1.0",
       changefreq: "daily",
@@ -2072,9 +2088,17 @@ function serveRobots(url) {
       "User-agent: *",
       "Allow: /",
       "Disallow: /admin",
-      "Disallow: /cont",
+      "Disallow: /cont$",
+      "Disallow: /cont/",
+      "Disallow: /contributor",
       "Disallow: /api/",
+      "Allow: /api/search?",
+      "Allow: /api/search$",
+      "Allow: /api/filters$",
+      "Allow: /api/filters?",
+      "Allow: /api/kirtans/",
       "",
+      `# Public search and reading guide: ${absoluteUrl(url.origin, "/llms.txt")}`,
       `Sitemap: ${absoluteUrl(url.origin, "/sitemap.xml")}`,
       "",
     ].join("\n"),
@@ -2290,7 +2314,7 @@ async function serveSocialImage(req, env, url) {
   }
 }
 
-function pageShell({ title, description, canonical, body, jsonLd, image, keywords = [] }) {
+function pageShell({ title, description, canonical, body, jsonLd, image, keywords = [], robots = "index, follow, max-image-preview:large" }) {
   const origin =
     new URL(canonical).origin;
 
@@ -2315,8 +2339,10 @@ function pageShell({ title, description, canonical, body, jsonLd, image, keyword
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <meta name="description" content="${escapeHtml(description)}">
   ${keywords.length ? `<meta name="keywords" content="${escapeHtml(keywords.filter(Boolean).join(", "))}">` : ""}
-  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="robots" content="${escapeHtml(robots)}">
   <link rel="canonical" href="${escapeHtml(canonical)}">
+  <link rel="help" href="/llms.txt" type="text/plain" title="AI and programmatic access">
+  <link rel="service-desc" href="/openapi.json" type="application/json" title="Public API">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="en_US">
   <meta property="og:locale:alternate" content="hi_IN">
@@ -2369,6 +2395,8 @@ function pageShell({ title, description, canonical, body, jsonLd, image, keyword
   ${body}
   <footer class="site-footer wrap">
     <nav class="site-footer__nav" aria-label="Footer">
+      <a href="/browse">Browse all collections</a>
+      <span aria-hidden="true">·</span>
       <a href="/contribute-code.html">Developers</a>
       <span aria-hidden="true">·</span>
       <a href="/contribute-proofread.html">Proofreaders</a>
@@ -2788,12 +2816,174 @@ function filterOptionsSample(raag, type) {
    WORKER
 -------------------------------------------------- */
 
+// These read-only views use the same published corpus as the public website.
+// No database bindings, unpublished revisions, or contributor data are exposed.
+function publicSearchParameters(url) {
+  const q = (url.searchParams.get("q") || "").trim();
+  const raag = (url.searchParams.get("raag") || "").trim();
+  const type = (url.searchParams.get("type") || "").trim();
+  const limit = Number(url.searchParams.get("limit") ?? 25);
+  const offset = Number(url.searchParams.get("offset") ?? 0);
+  if (q.length > 200 || raag.length > 300 || type.length > 300 ||
+      !Number.isSafeInteger(limit) || limit < 1 || limit > 100 ||
+      !Number.isSafeInteger(offset) || offset < 0) {
+    return null;
+  }
+  return { q, raag, type, limit, offset };
+}
+
+function publicResult(row, origin) {
+  return {
+    ...publicKirtanSummary(row),
+    url: absoluteUrl(origin, kirtanPath(row)),
+    markdown_url: absoluteUrl(origin, `${kirtanPath(row)}.md`),
+    json_url: absoluteUrl(origin, `/api/kirtans/${row.id}`),
+  };
+}
+
+function publicSearchLink(url, path, params, offset) {
+  const target = new URL(path, url.origin);
+  for (const key of ["q", "raag", "type", "limit"]) {
+    if (params[key]) target.searchParams.set(key, params[key]);
+  }
+  target.searchParams.set("offset", offset);
+  return target.toString();
+}
+
+async function servePublicSearch(env, url) {
+  const params = publicSearchParameters(url);
+  if (!params) {
+    return json({ error: "Use q up to 200 characters, raag/type up to 300 characters, limit 1–100, and a non-negative integer offset." }, 400);
+  }
+  const rows = (await filterStaticPublicKirtans(env, url.origin, params))
+    .sort((a, b) => Number(a.id) - Number(b.id));
+  const { limit, offset } = params;
+  const results = rows.slice(offset, offset + limit).map((row) => publicResult(row, url.origin));
+  const next = offset + limit < rows.length
+    ? publicSearchLink(url, url.pathname, params, offset + limit) : null;
+  const previous = offset > 0
+    ? publicSearchLink(url, url.pathname, params, Math.max(0, offset - limit)) : null;
+  if (url.pathname === "/api/search") {
+    return cachedJson({ total: rows.length, limit, offset, results, next, previous });
+  }
+  const html = pageShell({
+    title: "Search Kirtans - Pushti Kirtan",
+    description: "Search published kirtans by title, original text, English meaning, or transliteration.",
+    canonical: url.toString(),
+    robots: "noindex, follow",
+    body: `<main class="wrap collection-page">
+      <section class="collection-hero">
+        <h1>Search kirtans</h1>
+        <form action="/search" method="get" role="search">
+          <label for="kirtan-query">Title, original text, English meaning, or transliteration</label>
+          <input id="kirtan-query" name="q" type="search" maxlength="200" value="${escapeHtml(params.q)}">
+          ${["raag", "type"].map((key) => params[key]
+            ? `<input type="hidden" name="${key}" value="${escapeHtml(params[key])}">` : "").join("")}
+          <button type="submit" class="collection-hero__filter">Search</button>
+        </form>
+        <p>${rows.length} results. <a href="/browse">Browse raags and occasions</a>.</p>
+      </section>
+      <ol start="${offset + 1}">${results.map((row) => `<li>
+        <h2><a href="${escapeHtml(row.url)}">${escapeHtml(row.title)}</a></h2>
+        <p>${escapeHtml([formatSeoLabel(row.raag), formatSeoLabel(row.type)].filter(Boolean).join(" · "))}</p>
+        <p>${escapeHtml(row.preview)}</p>
+      </li>`).join("")}</ol>
+      ${results.length ? "" : "<p>No kirtans found. Try a shorter phrase or browse a collection.</p>"}
+      <nav aria-label="Search results pages">
+        ${previous ? `<a rel="prev" href="${escapeHtml(previous)}">Previous</a>` : ""}
+        ${next ? `<a rel="next" href="${escapeHtml(next)}">Next</a>` : ""}
+      </nav>
+    </main>`,
+  });
+  return new Response(html, { headers: { "content-type": "text/html;charset=utf-8", "cache-control": "public, max-age=300" } });
+}
+
+async function serveBrowsePage(env, url) {
+  const rows = (await getStaticPublicKirtans(env, url.origin)).filter(isVerifiedPublicKirtan);
+  const sections = [["raag", "Raags", "raag"], ["occasion", "Occasions", "type"]]
+    .map(([kind, heading, field]) => {
+      const counts = new Map();
+      for (const row of rows) {
+        if (row[field]) counts.set(row[field], (counts.get(row[field]) || 0) + 1);
+      }
+      return `<section><h2>${heading}</h2><ul>${[...counts.entries()]
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([value, count]) => `<li><a href="${escapeHtml(collectionPath(kind, value))}">${escapeHtml(formatSeoLabel(value))}</a> (${count})</li>`)
+        .join("")}</ul></section>`;
+    }).join("");
+  return new Response(pageShell({
+    title: "Browse All Raags and Occasions - Pushti Kirtan",
+    description: "Browse Pushtimargiya kirtans by raag and occasion, with original Braj Bhasha text, English meanings, and transliterations.",
+    canonical: absoluteUrl(url.origin, "/browse"),
+    body: `<main class="wrap collection-page">
+      <section class="collection-hero"><h1>Browse all kirtan collections</h1>
+        <p>${rows.length} published kirtans with original texts, English meanings, and transliterations where available.</p>
+        <a class="collection-hero__filter" href="/search">Search kirtan texts</a>
+      </section>${sections}</main>`,
+  }), { headers: { "content-type": "text/html;charset=utf-8", "cache-control": "public, max-age=300" } });
+}
+
+async function serveKirtanMarkdown(env, url) {
+  const match = url.pathname.match(/^\/kirtan\/[^/]*-(\d+)\.md$/);
+  const row = match ? await getStaticPublicKirtan(env, url.origin, Number(match[1])) : null;
+  if (!row) return text("Kirtan not found", 404);
+  const canonicalPath = `${kirtanPath(row)}.md`;
+  if (url.pathname !== canonicalPath) {
+    return Response.redirect(absoluteUrl(url.origin, canonicalPath), 301);
+  }
+  const pageUrl = absoluteUrl(url.origin, kirtanPath(row));
+  const sections = [
+    ["Original text", row.original_text],
+    ["English meaning", row.translate_text],
+    ["Transliteration", row.transliterate_text],
+  ].filter(([, content]) => String(content || "").trim());
+  const body = [
+    `# ${String(row.title || `Kirtan #${row.id}`).replace(/[\r\n]+/g, " ")}`,
+    `Source: ${pageUrl}`,
+    `Kirtan ID: ${row.id}`,
+    row.raag ? `Raag: ${formatSeoLabel(row.raag)}` : "",
+    row.type ? `Occasion: ${formatSeoLabel(row.type)}` : "",
+    row.updated_date ? `Updated: ${row.updated_date}` : "",
+    ...sections.map(([heading, content]) => `## ${heading}\n\n${String(content).trim()}`),
+    `## Source and usage\n\nCite the source page: ${pageUrl}\n\nTexts, spellings, and translations may have variants or errors. Publication status does not imply definitive religious authority. Terms: ${absoluteUrl(url.origin, "/legal.html")}`,
+  ].filter(Boolean).join("\n\n") + "\n";
+  return text(body, 200, {
+    "content-type": "text/markdown;charset=utf-8",
+    "cache-control": "public, max-age=300",
+    "x-content-type-options": "nosniff",
+    "link": `<${pageUrl}>; rel="canonical"`,
+    "x-robots-tag": "noindex",
+  });
+}
+
 export default {
 
   async fetch(req, env) {
 
     const u =
       new URL(req.url);
+
+    if (["/browse", "/search", "/api/search"].includes(u.pathname)) {
+      if (req.method !== "GET" && req.method !== "HEAD") {
+        return text("Method not allowed", 405, { Allow: "GET, HEAD" });
+      }
+      const response = u.pathname === "/browse"
+        ? await serveBrowsePage(env, u)
+        : await servePublicSearch(env, u);
+      return req.method === "HEAD"
+        ? new Response(null, { status: response.status, headers: response.headers })
+        : response;
+    }
+
+    if (/^\/kirtan\/[^/]+\.md$/.test(u.pathname)) {
+      if (req.method !== "GET" && req.method !== "HEAD") {
+        return text("Method not allowed", 405, { Allow: "GET, HEAD" });
+      }
+      const response = await serveKirtanMarkdown(env, u);
+      return req.method === "HEAD"
+        ? new Response(null, { status: response.status, headers: response.headers })
+        : response;
+    }
 
     if (
       req.method === "GET" &&

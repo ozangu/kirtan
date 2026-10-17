@@ -43,6 +43,53 @@ want to help make kirtan literature easier to find, read, study, and preserve.
 - Wrangler for local development and deployment.
 - No frontend framework and no runtime JavaScript dependencies.
 
+## Search and AI access
+
+Public content is available in HTML, JSON, and Markdown from the same published
+corpus. These routes require no login or JavaScript:
+
+- `/browse` links to every published raag and occasion collection.
+- `/search?q=krishna` renders search results with ordinary pagination links.
+- `/api/search?q=krishna&limit=10` returns bounded JSON results, canonical source
+  URLs, Markdown/JSON retrieval URLs, and `next`/`previous` pagination links.
+- `/api/filters` supplies exact `raag` and `type` values (`type` means occasion).
+- `/api/kirtans/{id}` returns a published kirtan's complete record.
+- `/kirtan/{slug}.md` returns original text, English meaning, and transliteration
+  where available, with the canonical HTML URL for citation. Discover the current
+  slug from search results. Stale slugs redirect.
+- `/llms.txt` explains discovery, fields, source attribution, and content context.
+- `/openapi.json` documents the public read API for tools and integrations.
+
+Search matches a phrase/substring, ignoring case and Latin accents, in titles,
+original texts, meanings, transliterations, raags, and occasions. It supports
+Devanagari but does not perform semantic search or generate answers. Raag and
+occasion filters use exact values. Search defaults to 25 results; `limit` must
+be 1–100 and `offset` a non-negative integer. The older `/api/kirtans` list
+continues to return an array for existing clients.
+
+`robots.txt` allows public reading/search endpoints while excluding private API
+and admin/contributor routes. The wildcard policy also covers AI search crawlers;
+there is no new grant of training rights or content licensing. Private routes
+still enforce authentication independently of robots.txt. The sitemap includes
+the browse directory. Search result pages and duplicate Markdown representations
+are marked `noindex`; canonical HTML kirtan and collection pages remain indexable.
+
+Run `npm test` for discovery, search, citation, pagination, escaping, and
+publication-filter checks. Public output updates when the published corpus is
+refreshed; see [housekeeping/README.md](housekeeping/README.md).
+
+After deployment, check `/robots.txt`, `/llms.txt`, `/openapi.json`, `/browse`, and
+a result's Markdown URL on the live domain. Cloudflare dashboard-level WAF and
+bot rules must also permit the intended search/retrieval crawlers; those account
+settings are separate from this repository. Submit `/sitemap.xml` in your search
+console if not already submitted. Indexing and citations remain each service's
+decision; `llms.txt` is a convenience for tools that use it, not a requirement or
+guarantee of inclusion.
+
+Crawler references: [OpenAI publisher guidance](https://help.openai.com/en/articles/12627856-publishers-and-developers-faq),
+[Anthropic crawler guidance](https://privacy.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler),
+and [Google AI features and websites](https://developers.google.com/search/docs/appearance/ai-features).
+
 ## Repository Structure
 
 ```text

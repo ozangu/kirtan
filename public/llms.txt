@@ -1,0 +1,29 @@
+# Pushti Kirtan
+
+> An independent devotional archive of Pushtimargiya kirtans and padas, with original Braj/Vraj Bhasha texts, English meanings, Roman transliterations, raags, and occasions where available.
+
+## Discover and read
+
+- [Browse raags and occasions](https://pushtikirtan.com/browse): Server-rendered directory linking to all published collections. No JavaScript required.
+- [Search kirtan texts](https://pushtikirtan.com/search): Server-rendered search, with q, raag, type, limit, and offset query parameters.
+- [Sitemap](https://pushtikirtan.com/sitemap.xml): Canonical kirtan and collection URLs.
+- [Public API specification](https://pushtikirtan.com/openapi.json): OpenAPI documentation for read-only search, filters, and individual kirtans. No authentication required.
+
+## Search and retrieval
+
+- [Search example](https://pushtikirtan.com/api/search?q=krishna&limit=10): Returns total, limit, offset, results, next, and previous. Each result includes the canonical source URL, Markdown URL, and JSON URL.
+- [Raag and occasion values](https://pushtikirtan.com/api/filters): Returns raags and types; pass these exact values as raag and type filters. type means occasion.
+
+Search q matches a phrase/substring in the title, original text, English meaning, transliteration, raag, or occasion. Matching ignores case and Latin accents; Hindi/Devanagari queries are supported. This is text search, not semantic question answering. Try a shorter phrase or alternate transliteration when needed. limit defaults to 25 (maximum 100); offset defaults to 0. Follow next until null to paginate.
+
+Read a result's json_url for original_text, translate_text (English meaning), transliterate_text (Roman transliteration), title, raag, type, and publication metadata. Read markdown_url for a text version with labeled sections. Markdown URLs append .md to the canonical kirtan path. Both formats use the same published data as the human-readable page. Missing fields mean unavailable content, not an invitation to infer a translation or attribution.
+
+## Citation and context
+
+Use the canonical human-readable kirtan URL when citing a text or meaning. Preserve the distinction between original text, English meaning, and transliteration. The verified flag identifies the site's published subset; it does not guarantee scholarly or theological accuracy. Do not infer authorship from a poet's name mentioned inside a verse. Spellings, readings, classifications, and translations can vary across traditions and editions.
+
+## About and terms
+
+- [Terms, privacy, and disclaimer](https://pushtikirtan.com/legal.html): Existing content and usage terms apply to every format. Machine-readable access does not grant an additional license.
+- [Contact](https://pushtikirtan.com/contact.html): Corrections and enquiries.
+- [Proofreading](https://pushtikirtan.com/contribute-proofread.html): How volunteers help improve the archive.

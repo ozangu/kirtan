@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "test": "node --test scripts/test-public-discovery.mjs",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "export:public-data": "scripts/export-public-kirtans.sh"

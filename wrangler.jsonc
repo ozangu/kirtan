@@ -9,6 +9,12 @@
     "binding": "ASSETS",
     "run_worker_first": [
       "/api/*",
+      "/robots.txt",
+      "/sitemap.xml",
+      "/browse",
+      "/search",
+      "/raag/*",
+      "/occasion/*",
       "/admin",
       "/admin/",
       "/cont",
